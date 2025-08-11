@@ -1,0 +1,32 @@
+# CMake build directories
+build/
+cmake-build-debug/
+cmake-build-release/
+out/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+Testing/
+_CPack_Packages/
+*.log
+
+# IDE-specific files (adjust as needed)
+#Visual Studio
+.vs/
+*.suo
+*.user
+*.vcxproj.user
+CMakeSettings.json
+
+# VS Code
+.vscode/
+
+# Executable, Libraries, Object files (if not within ignored build directories
+*.exe
+*.dll
+*.so
+*.a
+*.lib
+*.obj
+*.o
