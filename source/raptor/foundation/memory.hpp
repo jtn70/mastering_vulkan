@@ -144,6 +144,10 @@ namespace raptor {
 
     // Memory Service
     struct MemoryServiceConfiguration {
+        sizet   maximum_dynamic_size = 32 * 1024 * 1024; // Defaults to max 32MB of dynamic memory
+    }; // struct MemoryServiceConfiguration
+
+    struct MemoryService : public Service{
 
         RAPTOR_DECLARE_SERVICE( MemoryService );
 
@@ -159,7 +163,7 @@ namespace raptor {
         HeapAllocator   system_allocator;
 
         // Test allocators
-        void            test();
+        void test();
 
         static constexpr cstring k_name = "raptor_memory_service";
     }; // struct MemoryService

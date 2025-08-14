@@ -5,6 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/source/raptor",
                 "${workspaceFolder}/source/external",
+                "${workspaceFolder}/source/external/imgui",
+                "${workspaceFolder}/source/external/tlsf",
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++",
