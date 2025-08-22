@@ -171,7 +171,7 @@ namespace raptor {
     // Macro helpers
     #define ralloca(size, allocator)    ((allocator)->allocate( size, 1, __FILE__, __LINE__ ))
     #define rallocam(size, allocator)   ((u8*)(allocator)->allocate( size, 1, __FILE__, __LINE__ ))
-    #define rallocat(type, allocator)   ((type*)(allocator)->allocate(sizeof(type, 1, __FILE__, __LINE__ ))
+    #define rallocat(type, allocator)   ((type*)(allocator)->allocate(sizeof(type, 1, __FILE__, __LINE__ )))
 
     #define rallocaa(size, allocator, alignment)    ((allocator)->allocate(sizeof(type), 1, __FILE__, __LINE__ ))
 

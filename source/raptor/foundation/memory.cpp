@@ -67,7 +67,7 @@ namespace raptor {
 #if defined RAPTOR_IMGUI
     void imgui_walker( void* ptr, size_t size, int used, void* user) {
 
-        u32 memory_size = (u32) lsize;
+        u32 memory_size = ( u32 )size;
         cstring memory_unit = "b";
 
         if ( memory_size > 1024 * 1024 ) {
@@ -78,7 +78,7 @@ namespace raptor {
             memory_size /= 1024;
             memory_unit = "kb";
         }
-        ImGui::Text ( "\t%p $s size: $4llu %s\n",ptr, used ? "used" : "free", memory_size, memory_unit );
+        ImGui::Text ( "\t%p %s size: %4llu %s\n",ptr , used ? "used" : "free", memory_size, memory_unit );
 
         MemoryStatistics* stats = ( MemoryStatistics* )user;
         stats->add( used ? size : 0 );
@@ -142,10 +142,72 @@ namespace raptor {
             rprint( "HeapAllocator Shutdown - all memory freed!\n" );
         }
 
-        RASSERTM( stats.allocatedbytes = 0, "Allocations still present. Check your code!");
+        RASSERTM( stats.allocated_bytes = 0, "Allocations still present. Check your code!");
 
         tlsf_destroy( tlsf_handle );
 
         free( memory );
     }
+
+#if defined RAPTOR_IMGUI
+    void HeapAllocator::debug_ui() {
+        ImGui::Separator();
+        ImGui::Text( "Heap Allocator" );
+        ImGui::Separator();
+        MemoryStatistics stats( 0, max_size );
+        pool_t pool = tlsf_get_pool( tlsf_handle );
+        tlsf_walk_pool( pool, imgui_walker, (void* )&stats );
+
+        ImGui::Separator();
+        ImGui::Text( "\tAllocation count %d", stats.allocation_count );
+        ImGui::Text( "\tAllocated %llu K, free %llu Mb, total %llu Mb", stats.allocated_bytes / (1024 * 1024), ( max_size - stats.allocated_bytes) / ( 1024 * 1024 ), max_size / ( 1024 * 1024 ));
+    }
+#endif // RAPTOR_IMGUI
+
+#if defined (RAPTOR_MEMORY_STACK)
+    class RaptorStackWalker : public StackWalker {
+        public:
+            RaptorStackWalker() : StackWalker() {}
+        protected:
+            virtual void OnOutput ( LPCSTR szText ) {
+                rprint( "\nStack: \n%s\n", szText);
+                StackWalker::OnOutput( szText );
+            }
+    }; // class RaptorStackWalker
+
+    void* HeapAllocator::allocate( sizet size, sizet alignment ) {
+
+        /*
+        if ( size == 16 )
+        {
+            RaptorStackWalker sw;
+            sw.ShowCallStack();
+        }
+        */
+
+        void* mem = tlsf_malloc( tlsf_handle, size );
+        rprint( "Mem: %p, size %llu \n", mem, size );
+        return mem;
+    }
+#else
+
+    void HeapAllocator( sizet size, sizet alignment ) {
+#if defined (HEAP_ALOCATOR_STATS)
+        void* allocated_memory = alignment == 1 ? tlsf_malloc( tlsf_handle, size) : tlsf_memalign( tlsf_handle, alignment, size );
+        sizet actual_size = tlsf_block_size( allocated_memory );
+        allocated_size += actual_size;
+
+        /*
+        if ( size == 52224 ) {
+            return allocated_memory;
+        }
+        */
+       return allocated_memory;
+#else
+        return tlsf_malloc( tlsf_handle, size );
+#endif // HEAP_ALLOCATOR_STATS
+    }
+#endif // RAPTOR_MEMORY_STACK
+
+
 }

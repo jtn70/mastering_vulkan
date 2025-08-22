@@ -1,19 +1,38 @@
 {
     "configurations": [
         {
-            "name": "Linux",
+            "name": "Macos",
+            "includePath": [
+                "${workspaceFolder}/source/raptor",
+                "${workspaceFolder}/source/external",
+                "${workspaceFolder}/source/external/imgui",
+                "${workspaceFolder}/source/external/tlsf"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/g++",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-x64"
+        },
+        {
+            "name": "Windows",
             "includePath": [
                 "${workspaceFolder}/source/raptor",
                 "${workspaceFolder}/source/external",
                 "${workspaceFolder}/source/external/imgui",
                 "${workspaceFolder}/source/external/tlsf",
+                "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/*/include",
+                "C:/Program Files (x86)/Windows Kits/10/Include/*/ucrt",
+                "C:/Program Files (x86)/Windows Kits/10/Include/*/shared",
+                "C:/Program Files (x86)/Windows Kits/10/Include/*/um"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/g++",
-            "cStandard": "c11",
-            "cppStandard": "c++20",
-            "intelliSenseMode": "linux-gcc-x64"
+            "compilerPath": "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.42.34433/bin/Hostx64/x64/cl.exe", 
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-msvc-x64"
         }
+        
     ],
     "version": 4
 }
