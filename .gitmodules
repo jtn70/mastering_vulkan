@@ -4,3 +4,6 @@
 [submodule "source/external/tlsf"]
 	path = source/external/tlsf
 	url = https://github.com/mattconte/tlsf
+[submodule "source/external/cglm"]
+	path = source/external/cglm
+	url = https://github.com/recp/cglm.git

@@ -13,7 +13,7 @@ namespace raptor {
         Array();
         ~Array();
 
-        void        init( Allocator* allocatorm u32 initial_capacity, u32 initial_size = 0 );
+        void        init( Allocator* allocator, u32 initial_capacity, u32 initial_size = 0 );
         void        shutdown();
 
         void        push( const T& element );
@@ -51,7 +51,9 @@ namespace raptor {
     // View over a contiguuous memory block.
     template <typename T>
     struct ArrayView {
+
         ArrayView( T* data, u32 size );
+        
         void        set( T* data, u32 size )
 
         T&          operator[]( u32 index );
@@ -96,5 +98,143 @@ namespace raptor {
         size = capacity = 0;
     }
 
-    
-}
+    template<typename T>
+    inline void Array<T>::push( const T& element) {
+        if ( size >= capacity ) {
+            grow( capacity + 1 );
+        }
+
+        data [ size++ ] = element;
+    }
+
+    template<typename T>
+    inline T& Array<T>::push_use() {
+        if ( size >= capacity ) {
+            grow( capacity + 1 );
+        }
+        ++size;
+
+        return back();
+    }
+
+    template<typename T>
+    inline void Array<T>::pop() {
+        RASSERT( size > 0 );
+        -- size;
+    }
+
+    template<typename T>
+    inline void Array<T>::delete_swap( u32 index ) {
+        RASSERT( size > 0 && index < size );
+        data[ index ] = data[ --size ];
+    }
+
+    template<typename T>
+    inline T& Array<T>::operator[]( u32 index ) {
+        RASSERT( index < size );
+        return data[ index ];
+    }
+
+    template<typename T>
+    inline const T& Array<T>::operator []( u32 index ) const {
+        RASSERT( index < size );
+        return data[ index ];
+    }
+
+    template<typename T>
+    inline void Array<T>::clear() {
+        size = 0;
+    }
+
+    template<typename T>
+    inline void Array<T>::set_size( u32 new_size ) {
+        if ( new_size > capacity ) {
+            grow ( new_size );
+        }
+        size = new_size;
+    }
+
+    template<typename T>
+    inline void Array<T>::set_capacity( u32 new_capacity ) {
+        if ( new_capacity > capacity ) {
+            grow( new_capacity );
+        }
+    }
+
+    template<typename T>
+    inline void Array<T>::grow( u32 new_capacity ) {
+        if ( new_capacity < capacity * 2 ) {
+            new_capacity = capacity * 2;
+        } else if ( new_capacity < 4 ) {
+            new_capacity = 4;
+        }
+
+        T* new_data = ( T* )allocator->allocate( new_capacity * sizeof( T ), alignof( T ) );
+        if ( capacity ) {
+            memory_copy( new_data, data, capacity * sizeof( T ) );
+
+            allocator->deallocate( data );
+        }
+
+        data = new_data;
+        capacity = new_capacity;
+    }
+
+    template<typename T>
+    inline T& Array<T>::back() {
+        RASSERT( size );
+        return data[ size - 1 ];
+    }
+
+    template<typename T>
+    inline const T& Array<T>::back() const {
+        RASSERT( size );
+        return data[ size - 1 ];
+    }
+
+    template<typename T>
+    T& Array<T>::front() {
+        RASSERT( size );
+        return data[ 0 ];
+    }
+
+    template<typename T>
+    inline const T& Array<T>::front() const {
+        RASSERT( size );
+        return data[ 0 ];
+    }
+
+    template<typename T>
+    inline u32 Array<T>::size_in_bytes() const {
+        return size * sizeof( T );
+    }
+
+    template<typename T>
+    inline u32 Array<T>::capacity_in_bytes() const {
+        return capacity * sizeof( T );
+    }
+
+    // ArrayView
+    template<typename T>
+    inline ArrayView<T>::ArrayView( T* data_, u32 size_ ) : dataI( data_ ), size( size_ ) {
+
+    }
+
+    template<typename T>
+    inline void ArrayView<T>::set( T* data_, u32 size_) {
+        data = data_;
+        size = size_;
+    }
+
+    template<typename T>
+    inline T& ArrayView<T>::operator[]( u32 index ) {
+        RASSERT( index < size );
+        return data[ index ];
+    }
+
+    template<typename T>
+    inline const T& ArrayView<T>::operator[]( u32 index ) const {
+        RASSERT( index < size );
+        return data[ index ];
+    }
+} // namespace raptor

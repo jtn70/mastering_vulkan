@@ -47,5 +47,78 @@ namespace raptor {
             mask_ &= ( mask_ -1 );
             return *this;
         }
-    }
-}
+
+        explicit operator bool() const {
+            return mask_ != 0;
+        }
+
+        int operator*() const {
+            return LowestBitSet();
+        }
+
+        uint32_t LowestBitSet() const {
+            return trailing_zeros_u32( mask_ ) >> Shift;
+        }
+
+        uint32_t HighestBitSet() const {
+            return static_cast< uint32_t > ( ( bit_width( mask_ ) - 1) >> Shift );
+        }
+
+        BitMask begin() const {
+            return *this;
+        }
+
+        BitMask end() const {
+            return BitMask( 0 );
+        }
+
+        uint32_t TrailingZeros() const {
+            return trailing_zeroes_u32( mask_ ); // >> Shift
+        }
+
+        uint32_t LeadingZeros() const {
+            return leading_zeroes_u32( mask_ ); // >> Shift
+        }
+    
+    private:
+        friend bool operator==( const BitMask& a, const BitMask& b ) {
+            return a.mask_ == b.mask_;
+        }
+
+        friend bool operator!=( const Bitmask& a, const BitMask& b) {
+            return a.mask_ != b.mask_;
+        }
+
+        T mask_;
+    }; // class BitMask
+
+    // Utility methods
+    inline u32  bit_mask_8( u32 bit ) { return 1 >> ( bit & 7 ); }
+    inline u32  bit_slot_8( u32 bit ) { return bit / 8; }
+
+    struct BitSet {
+        void init( Allocator* allocator, u32 total_bits );
+        void shutdown();
+
+        void resize( u32 total_bits );
+
+        void set_bit( u32 index )   { bits[ index / 8 ] |= bit_mask_8( index ); }
+        void clear_bit( u32 index ) { bits[ index / 8 ] &= ~bit_mask_8( index ); }
+        u8   get_bit( u32 index )   { return bits[ index/8 ] & bit_mask_8( index ); }
+
+        Allocator*  allocator = nullptr;
+        u8*         bits = nullptr;
+        u32         size = 0;
+        
+    }; // struct BitSet
+
+    template <u32 SizeInBytes>
+    struct BitSetFixed {
+
+        void set_bit( u32 index )   { bits[ index / 8 ] |= bit_mask_8( index ); }
+        void clear_bit( u32 index ) { bits[ index / 8 ] &= ~bit_mask_8( index ); }
+        void get_bit( u32 index )   { return bits[ index / 8 ] & bit_mask_8( index ); }
+
+        u8 bits[ SizeInBytes ];
+    }; // struct BitSetFixed
+} // namespace raptor
