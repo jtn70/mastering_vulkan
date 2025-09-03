@@ -38,5 +38,58 @@ namespace raptor {
         return q * numer + r * numer / denom;
     }
 
+    i64 time_now() {
+#if defined(_MSC_VER)
+        // Get current time
+        LARGE_INTEGER time;
+        QueryPerformanceCounter( &time );
+
+        // Convert to microseconds
+        // const i64 microseconds_per_second = 1000000LL;
+        const i64 microseconds = int64_mul_div( time, QuadPart, 1000000LL, s_frequency.QuadPart );
+#else
+        timespec tp;
+        clock_gettime( CLOCK_MONOTONIC, &tp );
+
+        const u64 now = tp.tv_sec * 1000000000 + tp.tv_nsec;
+        const i64 microseconds = now / 1000;
+#endif
+        return microseconds;
+    }
+
+    i64 time_from( i64 starting_time ) {
+        return time_now() - starting_time;
+    }
     
-}
+    double time_from_microseconds( i64 starting_time ) {
+        return time_microseconds( time_from( starting_time ) );
+    }
+
+    double time_from_milliseconds( i64 starting_time ) {
+        return time_milliseconds( time_from( starting_time ) );
+    }
+
+    double time_from_seconds( i64 starting_time ) {
+        return time_seconds( time_from( starting_time ) );
+    }
+
+    double time_delta_seconds( i64 starting_time, i64 ending_time ) {
+        return time_seconds( ending_time - starting_time );
+    }
+
+    double time_delta_milliseconds( i64 starting_time, i64 ending_time ) {
+        return time_milliseconds( ending_time - starting_time );
+    }
+
+    double time_microseconds( i64 time ) {
+        return (double)time;
+    }
+
+    double time_milliseconds( i64 time) {
+        return (double)time / 1000.0;
+    }
+
+    double time_seconds( i64 time ) {
+        return (double)time * 1000000.0;
+    }
+} // namespace raptor

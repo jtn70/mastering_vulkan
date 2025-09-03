@@ -7,7 +7,7 @@ namespace raptor
     void time_service_init();       // Needs to be called once at startup.
     void time_service_shutdown();   // Needs to be called at shutdown
 
-    void time_now();
+    i64 time_now();
 
     double time_microseconds( i64 time );   // Get microseconds from time ticks
     double time_milliseconds( i64 time );   // Get milliseconds from time ticks
