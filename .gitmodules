@@ -7,3 +7,6 @@
 [submodule "source/external/cglm"]
 	path = source/external/cglm
 	url = https://github.com/recp/cglm.git
+[submodule "source/external/wyhash"]
+	path = source/external/wyhash
+	url = https://github.com/wangyi-fudan/wyhash.git
